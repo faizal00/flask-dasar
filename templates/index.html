@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <title>Data Mahasiswa</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <h1>Data Mahasiswa</h1>
+    <form id="form-input">
+      <label for="nama">Nama:</label>
+      <input type="text" id="nama" name="nama" /><br /><br />
+
+      <label for="nim">NIM:</label>
+      <input type="text" id="nim" name="nim" /><br /><br />
+
+      <label for="alamat">Alamat:</label>
+      <input type="text" id="alamat" name="alamat" /><br /><br />
+
+      <button type="button" onclick="submitData()">Submit</button>
+    </form>
+    <h2>Data Mahasiswa:</h2>
+    <table id="data-mahasiswa">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>NIM</th>
+          <th>Alamat</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <script>
+      function submitData() {
+        let namaValue = document.getElementById("nama").value;
+        let nimValue = document.getElementById("nim").value;
+        let alamatValue = document.getElementById("alamat").value;
+
+        $.ajax({
+          url: "/send-data",
+          method: "POST",
+          data: { nama: namaValue, nim: nimValue, alamat: alamatValue },
+          success: function (response) {
+            alert(response.message);
+            loadData();
+          },
+        });
+      }
+
+      function loadData() {
+        $.get("/show-data", function (data) {
+          let tableBody = $("#data-mahasiswa tbody");
+          tableBody.empty();
+
+          data.forEach(function (data) {
+            let row = $("<tr>");
+            row.append($("<td>").text(data.nama));
+            row.append($("<td>").text(data.nim));
+            row.append($("<td>").text(data.alamat));
+            tableBody.append(row);
+          });
+        });
+      }
+
+      $(document).ready(function () {
+        loadData();
+      });
+    </script>
+  </body>
+</html>
